@@ -1,12 +1,13 @@
 import asyncHandler from "express-async-handler";
 import UserModel from "../models/userModel.js";
+import ImageModel from "../models/imageModel.js";
 import generateToken from "../config/generateToken.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   console.log("reaching here///");
   const { name, email, password, pic } = req.body;
-  if (!name || !email || !password) {
-    req.status(400);
+  if (!name || !email || !password || !pic) {
+    res.status(400);
     throw new Error("Please enter all fields!");
   }
 
@@ -16,12 +17,25 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already Exists!");
   }
 
+  const profileImage = await ImageModel.create({
+    image: pic,
+  });
+
+  if (!profileImage) {
+    res.status(400);
+    throw new Error("Failed to Store Image in DB!");
+  }
+
+  console.log(profileImage._id);
+
   const user = await UserModel.create({
     name,
     email,
     password,
-    pic,
+    picture: profileImage._id,
   });
+
+  console.log(user);
 
   if (user) {
     res.status(201).json({
@@ -39,8 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
   const user = await UserModel.findOne({ email });
+  console.log(user);
 
   if (user && (await user.matchPassword(password))) {
     res.json({
@@ -56,4 +70,20 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-export default { registerUser, authUser };
+const allUser = asyncHandler(async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const users = await UserModel.find(keyword).find({
+    _id: { $ne: req.user._id },
+  });
+  res.send(users);
+});
+
+export default { registerUser, authUser, allUser };

@@ -1,46 +1,94 @@
 import React from "react";
-import { Alert, TextField, Typography } from "@mui/material";
-import LoadingButton from "@mui/lab/LoadingButton";
+import axios from "axios";
+import { TextField, Typography, Stack, Alert } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [cpassword, setCpassword] = React.useState("");
-  const [pic, setPic] = React.useState("");
+  const [profileImage, setProfileImage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const postDetails = (pics) => {
+  const [alertMsgs, setAlertMsgs] = React.useState([]);
+
+  const navigate = useNavigate();
+
+  // const postDetails = async (pics) => {
+  //   setLoading(true);
+  //   if (pics == undefined) {
+  //     <Alert severity="error">No image selected</Alert>;
+  //     return;
+  //   }
+
+  //   if (pics.type === "image/jpeg" || pics.type === "image/png") {
+  //     const result = await cloudinary.uploader.upload(pics, {
+  //       folder: "profile-images",
+  //     });
+  //     console.log(result);
+  //     setPic(result.secure_url);
+  //     setLoading(false);
+  //   } else {
+  //     <Alert severity="error">Selected file is not an image!</Alert>;
+  //     setLoading(false);
+  //   }
+  // };
+
+  function handleImage(img) {
     setLoading(true);
-    if (pics == undefined) {
-      <Alert severity="error">No image selected</Alert>;
+    var reader = new FileReader();
+    reader.readAsDataURL(img);
+    reader.onload = () => {
+      console.log(reader.result);
+      setProfileImage(reader.result);
+      setLoading(false);
+    };
+    reader.onerror = (error) => {
+      console.log("Error: ", error);
+      setLoading(false);
+    };
+  }
+
+  function showError(msg) {
+    let calertMsgs = alertMsgs.slice();
+    calertMsgs.push(msg);
+    setAlertMsgs(calertMsgs);
+  }
+
+  const submitHandler = async () => {
+    if (!name || !email || !password || !cpassword || !profileImage) {
+      showError("fill all the required fields!");
       return;
     }
 
-    if (pics.type === "image/jpeg" || pics.type === "image/jpeg") {
-      const data = new FormData();
-      data.append("file", pics);
-      data.append("upload_preset", "chat-app");
-      data.append("cloud_name", "dda4l3sle");
-      fetch(process.env.CLOUDINARY_URL, {
-        method: "POST",
-        body: data,
-      })
-        .then((res) =>
-          res.json().then((data) => {
-            setPic(data.url.toString());
-            setLoading(false);
-          })
-        )
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    } else {
-      <Alert severity="error">Selected file is not an image!</Alert>;
+    if (password != cpassword) {
+      showError("Entered Passwords don't match!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await axios.post(
+        `${import.meta.env.VITE_SERVER}/api/user/signup`,
+        {
+          name,
+          email,
+          password,
+          pic: profileImage,
+        }
+      );
+      localStorage.setItem("userInfo", JSON.stringify(result.data));
+      console.log(result);
+      setLoading(false);
+      navigate("/chats");
+    } catch (e) {
+      showError(e.message);
+      console.log(e);
+      setLoading(false);
     }
   };
-  const submitHandler = () => {};
   return (
     <div
       style={{
@@ -50,6 +98,26 @@ const SignUp = () => {
         margin: "auto",
       }}
     >
+      <Stack
+        style={{
+          position: "absolute",
+          right: "0",
+          top: "0",
+          backgroundColor: "Red",
+        }}
+      >
+        {console.log(alertMsgs)}
+        {alertMsgs.map((alertMsg) => (
+          <Alert
+            severity="error"
+            onClose={() => {
+              setAlertMsgs([]);
+            }}
+          >
+            {alertMsg}
+          </Alert>
+        ))}
+      </Stack>
       <Typography variant="body1">Enter Name</Typography>
       <TextField
         id="usrnm"
@@ -88,17 +156,15 @@ const SignUp = () => {
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => postDetails(e.target.files[0])}
+        onChange={(e) => handleImage(e.target.files[0])}
       />
+      {profileImage && profileImage !== "" ? (
+        <img src={profileImage} style={{ width: "10vw", height: "10vh" }} />
+      ) : null}
       <LoadingButton
         variant="contained"
         loading={loading}
-        onClick={() => {
-          console.log(name);
-          console.log(email);
-          console.log(password);
-          console.log(cpassword);
-        }}
+        onClick={submitHandler}
       >
         Signup
       </LoadingButton>

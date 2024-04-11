@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/userRouter.js";
+import chatRouter from "./routes/chatRouter.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 const app = express();
@@ -14,6 +15,7 @@ dotenv.config();
 connectDB();
 
 app.use("/api/user", userRouter);
+app.use("/api/chat", chatRouter);
 
 const { notFound, errorHandler } = errorMiddleware;
 app.use(notFound);

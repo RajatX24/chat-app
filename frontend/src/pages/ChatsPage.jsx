@@ -1,25 +1,28 @@
 import React, { useEffect } from "react";
+import { Box } from "@mui/material";
+import MyChats from "../components/MyChats";
+import ChatBox from "../components/ChatBox";
+import { ChatState } from "../Context/ChatProvider";
+import SideDrawer from "../components/SideDrawer";
 import axios from "axios";
 
 const ChatsPage = () => {
-  const [chats, setChats] = React.useState([]);
-
-  useEffect(() => {
-    async function getChat() {
-      const chatData = await axios.get(
-        `${import.meta.env.VITE_SERVER}/api/chats`
-      );
-      console.log(chatData.data);
-      setChats(chatData.data);
-    }
-
-    getChat();
-  }, []);
+  const { user } = ChatState();
   return (
-    <div>
-      {chats.map((chat) => (
-        <div key={chat._id}>{chat.chatName}</div>
-      ))}
+    <div style={{ width: "100%" }}>
+      {user && <SideDrawer />}
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          height: "90vh",
+          padding: "10px",
+        }}
+      >
+        {user && <MyChats />}
+        {user && <ChatBox />}
+      </Box>
     </div>
   );
 };

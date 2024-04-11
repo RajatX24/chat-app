@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     picture: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },

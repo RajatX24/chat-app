@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Typography, Tabs, Tab, Box } from "@mui/material";
 import PropTypes from "prop-types";
 import Login from "../components/authentication/Login";
@@ -7,6 +8,11 @@ import "./HomePage.css";
 
 const HomePage = () => {
   const [value, setValue] = React.useState(0);
+  const navigate = useNavigate();
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+  if (userInfo) navigate("/chats");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
