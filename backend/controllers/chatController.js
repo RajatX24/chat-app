@@ -19,9 +19,17 @@ const accessChat = asynchandler(async (req, res) => {
     .populate("users", "-password")
     .populate("latestMessage");
 
+  // isChat = await UserModel.populate(isChat, {
+  //   path: "latestMessage.sender",
+  //   select: "name picture email",
+  // });
   isChat = await UserModel.populate(isChat, {
     path: "latestMessage.sender",
-    select: "name pic email",
+    select: "name picture email",
+    populate: {
+      path: "picture",
+      model: "Image",
+    },
   });
 
   if (isChat.length > 0) {
@@ -56,8 +64,22 @@ const fetchChats = asynchandler(async (req, res) => {
       .then(async (results) => {
         results = await UserModel.populate(results, {
           path: "latestMessage.sender",
-          select: "name pic email",
+          select: "name picture email",
+          populate: {
+            path: "picture",
+            model: "Image",
+          },
         });
+
+        results = await UserModel.populate(results, {
+          path: "users",
+          select: "-password",
+          populate: {
+            path: "picture",
+            model: "Image",
+          },
+        });
+
         res.status(200).send(results);
       });
   } catch (err) {
@@ -89,9 +111,27 @@ const createGroupChat = asynchandler(async (req, res) => {
       groupAdmin: req.user,
     });
 
+    // const fullGroupChat = await ChatModel.findOne({ _id: groupChat._id })
+    //   .populate("users", "-password")
+    //   .populate("groupAdmin", "-password");
     const fullGroupChat = await ChatModel.findOne({ _id: groupChat._id })
-      .populate("users", "-password")
-      .populate("groupAdmin", "-password");
+      .populate({
+        path: "users",
+        select: "-password",
+        populate: {
+          path: "picture",
+          model: "Image",
+        },
+      })
+      // .populate("groupAdmin", "-password");
+      .populate({
+        path: "groupAdmin",
+        select: "-password",
+        populate: {
+          path: "picture",
+          model: "Image",
+        },
+      });
 
     res.status(200).json(fullGroupChat);
   } catch (err) {
@@ -112,8 +152,22 @@ const renameGroup = asynchandler(async (req, res) => {
       new: true,
     }
   )
-    .populate("users", "-password")
-    .populate("groupAdmin", "-password");
+    .populate({
+      path: "users",
+      select: "-password",
+      populate: {
+        path: "picture",
+        model: "Image",
+      },
+    })
+    .populate({
+      path: "groupAdmin",
+      select: "-password",
+      populate: {
+        path: "picture",
+        model: "Image",
+      },
+    });
 
   if (!updatedChat) {
     res.status(404);
@@ -126,6 +180,16 @@ const renameGroup = asynchandler(async (req, res) => {
 const addToGroup = asynchandler(async (req, res) => {
   const { chatId, userId } = req.body;
 
+  // const added = await ChatModel.findByIdAndUpdate(
+  //   chatId,
+  //   {
+  //     $push: { users: userId },
+  //   },
+  //   { new: true }
+  // )
+  //   .populate("users", "-password")
+  //   .populate("groupAdmin", "-password");
+
   const added = await ChatModel.findByIdAndUpdate(
     chatId,
     {
@@ -133,8 +197,22 @@ const addToGroup = asynchandler(async (req, res) => {
     },
     { new: true }
   )
-    .populate("users", "-password")
-    .populate("groupAdmin", "-password");
+    .populate({
+      path: "users",
+      select: "-password",
+      populate: {
+        path: "picture",
+        model: "Image",
+      },
+    })
+    .populate({
+      path: "groupAdmin",
+      select: "-password",
+      populate: {
+        path: "picture",
+        model: "Image",
+      },
+    });
 
   if (!added) {
     res.status(404);
@@ -147,6 +225,16 @@ const addToGroup = asynchandler(async (req, res) => {
 const removeFromGroup = asynchandler(async (req, res) => {
   const { chatId, userId } = req.body;
 
+  // const removed = await ChatModel.findByIdAndUpdate(
+  //   chatId,
+  //   {
+  //     $pull: { users: userId },
+  //   },
+  //   { new: true }
+  // )
+  //   .populate("users", "-password")
+  //   .populate("groupAdmin", "-password");
+
   const removed = await ChatModel.findByIdAndUpdate(
     chatId,
     {
@@ -154,8 +242,22 @@ const removeFromGroup = asynchandler(async (req, res) => {
     },
     { new: true }
   )
-    .populate("users", "-password")
-    .populate("groupAdmin", "-password");
+    .populate({
+      path: "users",
+      select: "-password",
+      populate: {
+        path: "picture",
+        model: "Image",
+      },
+    })
+    .populate({
+      path: "groupAdmin",
+      select: "-password",
+      populate: {
+        path: "picture",
+        model: "Image",
+      },
+    });
 
   if (!removed) {
     res.status(404);

@@ -14,8 +14,6 @@ const Login = () => {
 
   const submitHandler = async () => {
     if (!email || !password) {
-      console.log(email);
-      console.log(password);
       showError("fill all the required fields!");
       return;
     }
@@ -37,12 +35,10 @@ const Login = () => {
         config
       );
       localStorage.setItem("userInfo", JSON.stringify(result.data));
-      console.log(result);
       setLoading(false);
       navigate("/chats");
     } catch (e) {
       showError(e.message);
-      console.log(e);
       setLoading(false);
     }
   };
@@ -70,7 +66,6 @@ const Login = () => {
           backgroundColor: "Red",
         }}
       >
-        {console.log(alertMsgs)}
         {alertMsgs.map((alertMsg) => (
           <Alert
             severity="error"

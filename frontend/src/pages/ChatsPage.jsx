@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box } from "@mui/material";
 import MyChats from "../components/MyChats";
 import ChatBox from "../components/ChatBox";
@@ -8,6 +8,8 @@ import axios from "axios";
 
 const ChatsPage = () => {
   const { user } = ChatState();
+  const [fetchAgain, setFetchAgain] = React.useState(false);
+
   return (
     <div style={{ width: "100%" }}>
       {user && <SideDrawer />}
@@ -20,8 +22,10 @@ const ChatsPage = () => {
           padding: "10px",
         }}
       >
-        {user && <MyChats />}
-        {user && <ChatBox />}
+        {user && <MyChats fetchAgain={fetchAgain} />}
+        {user && (
+          <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+        )}
       </Box>
     </div>
   );

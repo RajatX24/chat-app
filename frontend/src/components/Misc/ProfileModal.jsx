@@ -42,7 +42,7 @@ export default function ProfileModal({ user, children }) {
           <Typography id="modal-modal-title" variant="h3" component="h3">
             {user.name}
           </Typography>
-          <Avatar sx={{ width: 100, height: 100 }} src={user.profileImage}>
+          <Avatar sx={{ width: 100, height: 100 }} src={user?.picture?.image}>
             {user.name.slice(0, 1)}
           </Avatar>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>

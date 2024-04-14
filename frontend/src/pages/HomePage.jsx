@@ -29,7 +29,7 @@ const HomePage = () => {
         }}
       >
         <Typography variant="h3">Project Chess</Typography>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <div>
           <Tabs
             value={value}
             onChange={handleChange}
@@ -38,7 +38,7 @@ const HomePage = () => {
             <Tab label="Login" {...a11yProps(0)} style={{ width: "50%" }} />
             <Tab label="SignUp" {...a11yProps(1)} style={{ width: "50%" }} />
           </Tabs>
-        </Box>
+        </div>
         <CustomTabPanel value={value} index={0}>
           <Login />
         </CustomTabPanel>

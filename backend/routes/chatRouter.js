@@ -1,5 +1,5 @@
 import express from "express";
-import authMiddleware from "../middlewares/authMiddleware.js";
+import { protect } from "../middlewares/authMiddleware.js";
 import chatController from "../controllers/chatController.js";
 
 const {
@@ -10,7 +10,7 @@ const {
   addToGroup,
   removeFromGroup,
 } = chatController;
-const { protect } = authMiddleware;
+
 const router = express.Router();
 
 router.post("/", protect, accessChat);
