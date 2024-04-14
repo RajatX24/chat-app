@@ -33,7 +33,9 @@ const server = app.listen(PORT, console.log(`server started on port ${PORT}`));
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://chat-app-lemon-seven.vercel.app",
+    origin: ["https://chat-app-lemon-seven.vercel.app"],
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true,
   },
 });
 
