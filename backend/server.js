@@ -9,7 +9,11 @@ import errorMiddleware from "./middlewares/errorMiddleware.js";
 import { Server } from "socket.io";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: ["https://chat-67eemlnf2-rajat-shuklas-projects.vercel.app"],
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true,
+  }));
 app.use(express.json());
 dotenv.config();
 
@@ -29,7 +33,7 @@ const server = app.listen(PORT, console.log(`server started on port ${PORT}`));
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://chat-67eemlnf2-rajat-shuklas-projects.vercel.app",
   },
 });
 
