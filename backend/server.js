@@ -10,7 +10,7 @@ import { Server } from "socket.io";
 
 const app = express();
 app.use(cors({
-    origin: ["https://chat-67eemlnf2-rajat-shuklas-projects.vercel.app"],
+    origin: ["https://chat-app-lemon-seven.vercel.app"],
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   }));
@@ -33,7 +33,7 @@ const server = app.listen(PORT, console.log(`server started on port ${PORT}`));
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://chat-67eemlnf2-rajat-shuklas-projects.vercel.app",
+    origin: "https://chat-app-lemon-seven.vercel.app",
   },
 });
 
